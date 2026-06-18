@@ -1,0 +1,60 @@
+/* Mobile-first responsive overrides */
+
+@media (max-width: 767px) {
+  /* Grid collapses */
+  .services-header,
+  .services-grid,
+  .pricing-grid,
+  .why-layout,
+  .contact-layout,
+  .footer-grid,
+  .process-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  /* Work grid: all single column on mobile */
+  .grid-work {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-work > div {
+    grid-column: span 1 !important;
+  }
+
+  .grid-work > div > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Process: single column */
+  .process-layout > div:first-child {
+    position: static !important;
+  }
+
+  /* Form row */
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pricing label wrap prevention */
+  .pricing-grid .cta-button {
+    font-size: 0.65rem;
+    padding: 0.7rem 1rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .why-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+
+  .process-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .process-layout > div:first-child {
+    position: static !important;
+  }
+}
