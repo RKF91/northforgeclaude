@@ -2,6 +2,7 @@ import "./responsive.css";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { FeaturedWork } from "@/components/FeaturedWork";
+import { Marquee } from "@/components/Marquee";
 import { Services } from "@/components/Services";
 import { Pricing } from "@/components/Pricing";
 import { Process } from "@/components/Process";
@@ -16,6 +17,7 @@ export default function Home() {
       <main>
         <Hero />
         <FeaturedWork />
+        <Marquee />
         <Services />
         <Pricing />
         <Process />

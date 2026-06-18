@@ -1,173 +1,189 @@
-﻿"use client";
+"use client";
 
-import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight } from "@phosphor-icons/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+gsap.registerPlugin(ScrollTrigger);
+
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+// Using Picsum seeds that consistently produce atmospheric interiors/hospitality
 const projects = [
   {
     title: "The Ember Room",
-    category: "Restaurant",
+    category: "Fine Dining",
     type: "Concept Work",
     description:
-      "Dark, moody website for an upscale steakhouse. Full-bleed photography, online reservation flow, and seasonal menu presentation.",
-    img: "https://picsum.photos/seed/northforge-ember-steakhouse/900/600",
-    tags: ["Restaurant", "Reservations", "Menu"],
+      "Dark, moody steakhouse website. Full-bleed hero photography, online reservation flow, and seasonal menu presentation.",
+    img: "https://picsum.photos/seed/ember-dark-dining-interior/1200/800",
+    imgMobile: "https://picsum.photos/seed/ember-dark-dining-interior/800/600",
+    tags: ["Fine Dining", "Reservations", "Menu"],
     wide: true,
+    flip: false,
   },
   {
-    title: "CÃ´te Brasserie",
-    category: "Brasserie",
+    title: "Côte Brasserie",
+    category: "French Brasserie",
     type: "Concept Work",
     description:
-      "Elegant French brasserie identity. Bilingual site, OpenTable embed, and editorial food photography layout.",
-    img: "https://picsum.photos/seed/northforge-cote-brasserie/700/700",
+      "Elegant French brasserie. Bilingual site, editorial food photography, and OpenTable integration.",
+    img: "https://picsum.photos/seed/cote-brasserie-french-elegant/700/700",
+    imgMobile: "https://picsum.photos/seed/cote-brasserie-french-elegant/700/500",
     tags: ["Brasserie", "Bilingual", "OpenTable"],
     wide: false,
+    flip: false,
   },
   {
     title: "Aldea Cantina",
     category: "Mexican Restaurant",
     type: "Concept Work",
     description:
-      "Vibrant yet refined cantina site. Bold typography, delivery integrations, and a catering inquiry flow.",
-    img: "https://picsum.photos/seed/northforge-aldea-cantina/700/700",
+      "Vibrant yet refined cantina site with delivery integration and a catering inquiry flow.",
+    img: "https://picsum.photos/seed/aldea-restaurant-warm-light/700/700",
+    imgMobile: "https://picsum.photos/seed/aldea-restaurant-warm-light/700/500",
     tags: ["Restaurant", "Delivery", "Catering"],
     wide: false,
+    flip: true,
   },
   {
     title: "The Willow Hotel",
     category: "Boutique Hotel",
     type: "Concept Work",
     description:
-      "Luxury boutique hotel with room showcase, spa booking, and local dining guide. Clean, editorial luxury feel.",
-    img: "https://picsum.photos/seed/northforge-willow-hotel/900/600",
-    tags: ["Hotel", "Bookings", "Hospitality"],
+      "Luxury boutique hotel with room showcase, spa booking, and local dining guide.",
+    img: "https://picsum.photos/seed/willow-hotel-luxury-interior/1200/800",
+    imgMobile: "https://picsum.photos/seed/willow-hotel-luxury-interior/800/600",
+    tags: ["Hotel", "Booking", "Hospitality"],
     wide: true,
+    flip: false,
   },
 ];
 
-function reveal(i: number) {
-  return {
-    initial: { opacity: 0, y: 40 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.2 },
-    transition: { duration: 0.8, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  };
-}
-
 export function FeaturedWork() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce || !gridRef.current) return;
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLElement>(".work-card");
+      cards.forEach((card, i) => {
+        gsap.fromTo(
+          card,
+          { opacity: 0, y: 48, scale: 0.97 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            delay: i * 0.1,
+            scrollTrigger: {
+              trigger: card,
+              start: "top 88%",
+              once: true,
+            },
+          }
+        );
+      });
+    }, gridRef);
+    return () => ctx.revert();
+  }, [reduce]);
+
   return (
     <section
       id="work"
-      style={{ background: "#0d0d0d", padding: "7rem 0" }}
+      style={{ background: "#0d0d0d", paddingTop: "5rem", paddingBottom: "5rem" }}
     >
-      <div
-        style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}
-      >
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
         {/* Header */}
-        <motion.div {...reveal(0)} style={{ marginBottom: "4rem" }}>
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease }}
+          className="mb-12"
+        >
           <h2
             style={{
               fontFamily: "var(--font-cormorant), serif",
-              fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
               fontWeight: 400,
               color: "#f2ede4",
               letterSpacing: "-0.01em",
               lineHeight: 1.1,
-              maxWidth: "480px",
             }}
+            className="text-[2.2rem] sm:text-[3rem] md:text-[3.8rem] max-w-[500px]"
           >
             Selected{" "}
-            <em style={{ fontStyle: "italic", color: "#c8a96e", lineHeight: 1.15, display: "inline-block", paddingBottom: "0.05em" }}>
+            <em
+              style={{
+                fontStyle: "italic",
+                color: "#c8a96e",
+                lineHeight: 1.15,
+                display: "inline-block",
+                paddingBottom: "0.05em",
+              }}
+            >
               concept
             </em>{" "}
             work
           </h2>
           <p
-            style={{
-              marginTop: "1rem",
-              fontSize: "0.9rem",
-              color: "rgba(242,237,228,0.52)",
-              maxWidth: "380px",
-              lineHeight: 1.7,
-            }}
+            className="mt-3 text-sm max-w-[340px]"
+            style={{ color: "rgba(242,237,228,0.48)", lineHeight: 1.7 }}
           >
-            These projects are design concepts built to show our approach.
-            Real client work available on request.
+            Design concepts built to show our approach. Real client work
+            available on request.
           </p>
         </motion.div>
 
-        {/* Grid - alternating wide/narrow */}
+        {/* Grid */}
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "1px",
-            background: "rgba(200,169,110,0.1)",
-          }}
-          className="grid-work"
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-2 gap-[1px]"
+          style={{ background: "rgba(200,169,110,0.08)" }}
         >
-          {projects.map((p, i) => (
-            <motion.div
+          {projects.map((p) => (
+            <div
               key={p.title}
-              {...reveal(i * 0.5)}
-              style={{
-                background: "#0d0d0d",
-                overflow: "hidden",
-                gridColumn: p.wide ? "span 2" : "span 1",
-                cursor: "default",
-              }}
-              className="work-card"
+              className={`work-card bg-[#0d0d0d] overflow-hidden ${p.wide ? "md:col-span-2" : ""}`}
+              style={{ opacity: 0 }} // GSAP animates this in
             >
               <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: p.wide ? "1fr 1fr" : "1fr",
-                  gridTemplateRows: p.wide ? "auto" : "auto 1fr",
-                }}
+                className={`${
+                  p.wide
+                    ? "grid grid-cols-1 md:grid-cols-2"
+                    : "flex flex-col"
+                }`}
               >
                 {/* Image */}
                 <div
-                  style={{
-                    position: "relative",
-                    aspectRatio: p.wide ? "16/9" : "4/3",
-                    overflow: "hidden",
-                    background: "#111",
-                    order: i % 4 === 2 ? 1 : 0,
-                  }}
+                  className={`relative overflow-hidden bg-[#111] ${
+                    p.wide ? "aspect-video md:aspect-auto md:min-h-[320px]" : "aspect-[4/3]"
+                  } ${p.flip ? "md:order-2" : ""}`}
                 >
                   <img
                     src={p.img}
                     alt={p.title}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      filter: "brightness(0.75) saturate(0.8)",
-                      transition: "transform 0.6s ease, filter 0.6s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)";
-                      (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.85) saturate(0.9)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
-                      (e.currentTarget as HTMLImageElement).style.filter = "brightness(0.75) saturate(0.8)";
-                    }}
+                    className="img-zoom w-full h-full object-cover"
+                    style={{ filter: "brightness(0.7) saturate(0.75)" }}
+                    loading="lazy"
                   />
-                  {/* Concept badge */}
                   <span
                     style={{
                       position: "absolute",
                       top: "1rem",
                       left: "1rem",
-                      background: "rgba(8,8,8,0.75)",
-                      border: "1px solid rgba(200,169,110,0.3)",
+                      background: "rgba(8,8,8,0.78)",
+                      border: "1px solid rgba(200,169,110,0.28)",
                       color: "#c8a96e",
-                      fontSize: "0.65rem",
+                      fontSize: "0.62rem",
                       letterSpacing: "0.18em",
                       textTransform: "uppercase",
-                      padding: "0.3rem 0.7rem",
+                      padding: "0.28rem 0.65rem",
                       fontWeight: 600,
                     }}
                   >
@@ -177,22 +193,19 @@ export function FeaturedWork() {
 
                 {/* Content */}
                 <div
-                  style={{
-                    padding: "2rem 2rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    minHeight: p.wide ? "auto" : "180px",
-                  }}
+                  className={`flex flex-col justify-between p-6 md:p-8 ${
+                    p.flip ? "md:order-1" : ""
+                  }`}
+                  style={{ minHeight: p.wide ? "auto" : "200px" }}
                 >
                   <div>
                     <p
                       style={{
-                        fontSize: "0.65rem",
+                        fontSize: "0.62rem",
                         letterSpacing: "0.18em",
                         textTransform: "uppercase",
                         color: "#c8a96e",
-                        marginBottom: "0.6rem",
+                        marginBottom: "0.55rem",
                         fontWeight: 500,
                       }}
                     >
@@ -201,45 +214,38 @@ export function FeaturedWork() {
                     <h3
                       style={{
                         fontFamily: "var(--font-cormorant), serif",
-                        fontSize: p.wide ? "2rem" : "1.65rem",
+                        fontSize: p.wide ? "2rem" : "1.6rem",
                         fontWeight: 500,
                         color: "#f2ede4",
                         letterSpacing: "0.01em",
                         lineHeight: 1.15,
-                        marginBottom: "0.85rem",
+                        marginBottom: "0.75rem",
                       }}
                     >
                       {p.title}
                     </h3>
                     <p
                       style={{
-                        fontSize: "0.88rem",
-                        color: "rgba(242,237,228,0.55)",
-                        lineHeight: 1.7,
-                        maxWidth: "380px",
+                        fontSize: "0.875rem",
+                        color: "rgba(242,237,228,0.5)",
+                        lineHeight: 1.75,
+                        maxWidth: "360px",
                       }}
                     >
                       {p.description}
                     </p>
                   </div>
-                  <div
-                    style={{
-                      marginTop: "1.5rem",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "0.5rem",
-                    }}
-                  >
+                  <div className="mt-5 flex flex-wrap gap-2">
                     {p.tags.map((tag) => (
                       <span
                         key={tag}
                         style={{
-                          fontSize: "0.65rem",
+                          fontSize: "0.62rem",
                           letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          color: "rgba(242,237,228,0.45)",
-                          border: "1px solid rgba(242,237,228,0.12)",
-                          padding: "0.25rem 0.65rem",
+                          color: "rgba(242,237,228,0.4)",
+                          border: "1px solid rgba(242,237,228,0.1)",
+                          padding: "0.22rem 0.6rem",
                         }}
                       >
                         {tag}
@@ -248,19 +254,23 @@ export function FeaturedWork() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* CTA */}
-        <motion.div {...reveal(4)} style={{ marginTop: "3rem", textAlign: "center" }}>
+        <motion.div
+          initial={reduce ? false : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2, ease }}
+          className="mt-10 text-center"
+        >
           <a
             href="#contact"
+            className="inline-flex items-center gap-2"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              fontSize: "0.75rem",
+              fontSize: "0.72rem",
               letterSpacing: "0.14em",
               textTransform: "uppercase",
               color: "#c8a96e",
@@ -269,13 +279,14 @@ export function FeaturedWork() {
               paddingBottom: "0.2rem",
               transition: "color 0.2s",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#d9be8f")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#c8a96e")}
           >
             Start your project
-            <ArrowUpRight size={14} weight="bold" />
+            <ArrowUpRight size={13} weight="bold" />
           </a>
         </motion.div>
       </div>
     </section>
   );
 }
-

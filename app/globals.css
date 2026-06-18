@@ -16,9 +16,7 @@
 }
 
 @layer base {
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
@@ -30,56 +28,17 @@
     background-color: #080808;
     color: #f2ede4;
     overflow-x: hidden;
+    font-family: var(--font-dm-sans), sans-serif;
   }
 
-  ::selection {
-    background: #c8a96e;
-    color: #080808;
-  }
+  ::selection { background: #c8a96e; color: #080808; }
 
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #111111;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #8a6d3e;
-    border-radius: 2px;
-  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #111111; }
+  ::-webkit-scrollbar-thumb { background: #8a6d3e; border-radius: 2px; }
 }
 
-@layer utilities {
-  .text-gradient-gold {
-    background: linear-gradient(135deg, #d9be8f 0%, #c8a96e 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .section-pad {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
-
-  @media (min-width: 1024px) {
-    .section-pad {
-      padding-top: 7rem;
-      padding-bottom: 7rem;
-    }
-  }
-
-  .gold-line {
-    display: block;
-    width: 2.5rem;
-    height: 1px;
-    background: #c8a96e;
-  }
-}
-
-/* Film grain overlay - fixed, pointer-events-none */
+/* Film grain - fixed, pointer-events-none, GPU-isolated */
 body::after {
   content: "";
   position: fixed;
@@ -87,5 +46,75 @@ body::after {
   pointer-events: none;
   z-index: 9999;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
+  opacity: 0.028;
+  will-change: transform;
+}
+
+/* Marquee */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Gold line utility */
+.gold-line {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: #c8a96e;
+  flex-shrink: 0;
+}
+
+/* Pricing mobile scroll */
+.pricing-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1rem;
+  cursor: grab;
+}
+
+.pricing-scroll-wrap::-webkit-scrollbar { height: 3px; }
+.pricing-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.3); }
+
+.pricing-snap-card {
+  scroll-snap-align: start;
+}
+
+/* Image hover zoom */
+.img-zoom {
+  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.6s ease;
+}
+.img-zoom:hover {
+  transform: scale(1.06);
+  filter: brightness(0.9) saturate(0.95);
+}
+
+/* Button active push */
+.btn-push:active {
+  transform: scale(0.97) translateY(1px);
+}
+
+/* Line draw animation */
+@keyframes line-draw {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+
+.animate-line-draw {
+  animation: line-draw 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
 }

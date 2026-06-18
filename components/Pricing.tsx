@@ -1,7 +1,9 @@
-﻿"use client";
+"use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { Check, Star } from "@phosphor-icons/react";
+
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const websitePackages = [
   {
@@ -18,7 +20,6 @@ const websitePackages = [
       "1 revision round",
     ],
     popular: false,
-    cta: "Get Started",
   },
   {
     name: "Business",
@@ -37,7 +38,6 @@ const websitePackages = [
       "30-day post-launch support",
     ],
     popular: true,
-    cta: "Most Popular",
   },
   {
     name: "Premium",
@@ -48,14 +48,13 @@ const websitePackages = [
       "Unlimited pages",
       "Brand identity alignment",
       "Advanced animations",
-      "Online ordering or booking system",
+      "Online ordering or booking",
       "Blog or news section",
       "Advanced local SEO",
       "Priority support",
       "Unlimited revisions",
     ],
     popular: false,
-    cta: "Let's Talk",
   },
 ];
 
@@ -63,6 +62,7 @@ const supportPlans = [
   {
     name: "Basic Care",
     price: "$49",
+    note: "Monthly",
     period: "/month",
     features: [
       "Monthly content updates",
@@ -75,6 +75,7 @@ const supportPlans = [
   {
     name: "Plus Management",
     price: "$79",
+    note: "Monthly",
     period: "/month",
     features: [
       "Everything in Basic Care",
@@ -88,6 +89,7 @@ const supportPlans = [
   {
     name: "Premium Partnership",
     price: "$149",
+    note: "Monthly",
     period: "/month",
     features: [
       "Everything in Plus",
@@ -101,15 +103,6 @@ const supportPlans = [
   },
 ];
 
-function reveal(i: number) {
-  return {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.15 },
-    transition: { duration: 0.7, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  };
-}
-
 function PricingCard({
   name,
   price,
@@ -117,19 +110,33 @@ function PricingCard({
   tagline,
   features,
   popular,
-  cta,
   index,
-}: (typeof websitePackages)[0] & { index: number }) {
+  period,
+}: {
+  name: string;
+  price: string;
+  note: string;
+  tagline?: string;
+  features: string[];
+  popular: boolean;
+  index: number;
+  period?: string;
+}) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
-      {...reveal(index)}
+      initial={reduce ? false : { opacity: 0, y: 36 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, delay: index * 0.1, ease }}
+      className="pricing-snap-card flex flex-col relative"
       style={{
-        position: "relative",
         background: popular ? "#1a1510" : "#0d0d0d",
-        border: popular ? "1px solid rgba(200,169,110,0.45)" : "1px solid rgba(200,169,110,0.1)",
+        border: popular
+          ? "1px solid rgba(200,169,110,0.45)"
+          : "1px solid rgba(200,169,110,0.1)",
         padding: "2.25rem 2rem",
-        display: "flex",
-        flexDirection: "column",
+        minWidth: "min(280px, 85vw)",
       }}
     >
       {popular && (
@@ -140,39 +147,39 @@ function PricingCard({
             left: "1.5rem",
             background: "#c8a96e",
             color: "#080808",
-            fontSize: "0.6rem",
+            fontSize: "0.58rem",
             fontWeight: 700,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
-            padding: "0.3rem 0.75rem",
+            padding: "0.28rem 0.72rem",
             display: "flex",
             alignItems: "center",
             gap: "0.3rem",
           }}
         >
-          <Star size={9} weight="fill" />
-          Most Popular
+          <Star size={8} weight="fill" />
+          {period ? "Recommended" : "Most Popular"}
         </div>
       )}
 
       <div style={{ marginBottom: "1.5rem", marginTop: popular ? "0.75rem" : 0 }}>
         <p
           style={{
-            fontSize: "0.65rem",
+            fontSize: "0.62rem",
             letterSpacing: "0.18em",
             textTransform: "uppercase",
             color: "#c8a96e",
-            marginBottom: "0.5rem",
+            marginBottom: "0.4rem",
             fontWeight: 500,
           }}
         >
           {note}
         </p>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
+        <div className="flex items-baseline gap-1">
           <span
             style={{
               fontFamily: "var(--font-cormorant), serif",
-              fontSize: "3rem",
+              fontSize: "2.8rem",
               fontWeight: 500,
               color: "#f2ede4",
               lineHeight: 1,
@@ -180,48 +187,47 @@ function PricingCard({
           >
             {price}
           </span>
+          {period && (
+            <span style={{ fontSize: "0.85rem", color: "rgba(242,237,228,0.45)" }}>
+              {period}
+            </span>
+          )}
         </div>
         <p
           style={{
             fontFamily: "var(--font-cormorant), serif",
-            fontSize: "1.35rem",
+            fontSize: "1.3rem",
             fontWeight: 400,
             color: "#f2ede4",
-            marginTop: "0.4rem",
+            marginTop: "0.35rem",
           }}
         >
           {name}
         </p>
-        <p
-          style={{
-            fontSize: "0.85rem",
-            color: "rgba(242,237,228,0.5)",
-            marginTop: "0.3rem",
-          }}
-        >
-          {tagline}
-        </p>
+        {tagline && (
+          <p style={{ fontSize: "0.82rem", color: "rgba(242,237,228,0.45)", marginTop: "0.25rem" }}>
+            {tagline}
+          </p>
+        )}
       </div>
 
-      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", flex: 1 }}>
+      <ul className="flex-1" style={{ listStyle: "none", padding: 0, margin: "0 0 1.75rem" }}>
         {features.map((f) => (
           <li
             key={f}
+            className="flex gap-3 items-start"
             style={{
-              display: "flex",
-              gap: "0.65rem",
-              alignItems: "flex-start",
-              padding: "0.55rem 0",
+              padding: "0.5rem 0",
               borderBottom: "1px solid rgba(200,169,110,0.07)",
               fontSize: "0.875rem",
-              color: "rgba(242,237,228,0.75)",
+              color: "rgba(242,237,228,0.72)",
               lineHeight: 1.5,
             }}
           >
             <Check
-              size={14}
+              size={13}
               weight="bold"
-              style={{ color: "#c8a96e", marginTop: "0.2rem", flexShrink: 0 }}
+              style={{ color: "#c8a96e", marginTop: "0.22rem", flexShrink: 0 }}
             />
             {f}
           </li>
@@ -230,14 +236,13 @@ function PricingCard({
 
       <a
         href="#contact"
+        className="btn-push block text-center"
         style={{
-          display: "block",
-          textAlign: "center",
-          padding: "0.8rem 1.5rem",
+          padding: "0.85rem 1.5rem",
           background: popular ? "#c8a96e" : "transparent",
           color: popular ? "#080808" : "#c8a96e",
-          border: popular ? "none" : "1px solid rgba(200,169,110,0.4)",
-          fontSize: "0.75rem",
+          border: popular ? "none" : "1px solid rgba(200,169,110,0.35)",
+          fontSize: "0.7rem",
           fontWeight: 700,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
@@ -245,22 +250,33 @@ function PricingCard({
           transition: "all 0.2s",
         }}
         onMouseEnter={(e) => {
-          if (popular) {
-            e.currentTarget.style.background = "#d9be8f";
-          } else {
-            e.currentTarget.style.background = "rgba(200,169,110,0.1)";
-          }
+          (e.currentTarget as HTMLAnchorElement).style.background = popular
+            ? "#d9be8f"
+            : "rgba(200,169,110,0.1)";
         }}
         onMouseLeave={(e) => {
-          if (popular) {
-            e.currentTarget.style.background = "#c8a96e";
-          } else {
-            e.currentTarget.style.background = "transparent";
-          }
+          (e.currentTarget as HTMLAnchorElement).style.background = popular
+            ? "#c8a96e"
+            : "transparent";
         }}
       >
-        {cta}
+        {price === "Custom" ? "Let's Talk" : "Get Started"}
       </a>
+    </motion.div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.7, ease }}
+      className="mb-10"
+    >
+      {children}
     </motion.div>
   );
 }
@@ -271,212 +287,88 @@ export function Pricing() {
       id="pricing"
       style={{
         background: "#080808",
-        padding: "7rem 0",
+        paddingTop: "5rem",
+        paddingBottom: "5rem",
         borderTop: "1px solid rgba(200,169,110,0.08)",
       }}
     >
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
         {/* Website Packages */}
-        <motion.div {...reveal(0)} style={{ marginBottom: "4rem" }}>
+        <SectionLabel>
           <h2
             style={{
               fontFamily: "var(--font-cormorant), serif",
-              fontSize: "clamp(2.2rem, 4.5vw, 3.5rem)",
               fontWeight: 400,
               color: "#f2ede4",
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
-              marginBottom: "0.75rem",
+              marginBottom: "0.6rem",
             }}
+            className="text-[2.1rem] sm:text-[3rem] md:text-[3.5rem]"
           >
             Website Packages
           </h2>
-          <p
-            style={{
-              fontSize: "0.9rem",
-              color: "rgba(242,237,228,0.5)",
-              maxWidth: "400px",
-              lineHeight: 1.7,
-            }}
-          >
+          <p style={{ fontSize: "0.88rem", color: "rgba(242,237,228,0.46)", lineHeight: 1.7 }}>
             One-time investment. Delivered in 2-4 weeks. No hidden fees.
           </p>
-        </motion.div>
+        </SectionLabel>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1px",
-            background: "rgba(200,169,110,0.08)",
-            marginBottom: "6rem",
-          }}
-          className="pricing-grid"
+        {/* Desktop grid / Mobile horizontal scroll */}
+        <div className="hidden md:grid md:grid-cols-3 gap-[1px] mb-20"
+          style={{ background: "rgba(200,169,110,0.08)" }}
         >
           {websitePackages.map((pkg, i) => (
             <PricingCard key={pkg.name} {...pkg} index={i} />
           ))}
         </div>
 
+        {/* Mobile: horizontal snap scroll */}
+        <div className="md:hidden pricing-scroll-wrap mb-16">
+          <div className="flex gap-4" style={{ paddingRight: "1.25rem" }}>
+            {websitePackages.map((pkg, i) => (
+              <PricingCard key={pkg.name} {...pkg} index={i} />
+            ))}
+          </div>
+        </div>
+
         {/* Support Plans */}
-        <motion.div {...reveal(0)} style={{ marginBottom: "4rem" }}>
+        <SectionLabel>
           <h2
             style={{
               fontFamily: "var(--font-cormorant), serif",
-              fontSize: "clamp(2.2rem, 4.5vw, 3.5rem)",
               fontWeight: 400,
               color: "#f2ede4",
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
-              marginBottom: "0.75rem",
+              marginBottom: "0.6rem",
             }}
+            className="text-[2.1rem] sm:text-[3rem] md:text-[3.5rem]"
           >
             Monthly Support Plans
           </h2>
-          <p
-            style={{
-              fontSize: "0.9rem",
-              color: "rgba(242,237,228,0.5)",
-              maxWidth: "400px",
-              lineHeight: 1.7,
-            }}
-          >
+          <p style={{ fontSize: "0.88rem", color: "rgba(242,237,228,0.46)", lineHeight: 1.7 }}>
             Keep your site fresh without touching a line of code.
           </p>
-        </motion.div>
+        </SectionLabel>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "1px",
-            background: "rgba(200,169,110,0.08)",
-          }}
-          className="pricing-grid"
+        {/* Desktop grid / Mobile horizontal scroll */}
+        <div className="hidden md:grid md:grid-cols-3 gap-[1px]"
+          style={{ background: "rgba(200,169,110,0.08)" }}
         >
           {supportPlans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              {...reveal(i)}
-              style={{
-                background: plan.popular ? "#1a1510" : "#0d0d0d",
-                border: plan.popular
-                  ? "1px solid rgba(200,169,110,0.45)"
-                  : "1px solid rgba(200,169,110,0.1)",
-                padding: "2.25rem 2rem",
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              {plan.popular && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-1px",
-                    left: "1.5rem",
-                    background: "#c8a96e",
-                    color: "#080808",
-                    fontSize: "0.6rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    padding: "0.3rem 0.75rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.3rem",
-                  }}
-                >
-                  <Star size={9} weight="fill" />
-                  Recommended
-                </div>
-              )}
-              <div style={{ marginBottom: "1.5rem", marginTop: plan.popular ? "0.75rem" : 0 }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "0.2rem" }}>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-cormorant), serif",
-                      fontSize: "2.8rem",
-                      fontWeight: 500,
-                      color: "#f2ede4",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {plan.price}
-                  </span>
-                  <span style={{ fontSize: "0.85rem", color: "rgba(242,237,228,0.5)" }}>
-                    {plan.period}
-                  </span>
-                </div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-cormorant), serif",
-                    fontSize: "1.35rem",
-                    fontWeight: 400,
-                    color: "#f2ede4",
-                    marginTop: "0.4rem",
-                  }}
-                >
-                  {plan.name}
-                </p>
-              </div>
-
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", flex: 1 }}>
-                {plan.features.map((f) => (
-                  <li
-                    key={f}
-                    style={{
-                      display: "flex",
-                      gap: "0.65rem",
-                      alignItems: "flex-start",
-                      padding: "0.5rem 0",
-                      borderBottom: "1px solid rgba(200,169,110,0.07)",
-                      fontSize: "0.875rem",
-                      color: "rgba(242,237,228,0.75)",
-                    }}
-                  >
-                    <Check
-                      size={14}
-                      weight="bold"
-                      style={{ color: "#c8a96e", marginTop: "0.18rem", flexShrink: 0 }}
-                    />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href="#contact"
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  padding: "0.8rem 1.5rem",
-                  background: plan.popular ? "#c8a96e" : "transparent",
-                  color: plan.popular ? "#080808" : "#c8a96e",
-                  border: plan.popular ? "none" : "1px solid rgba(200,169,110,0.4)",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  if (plan.popular) e.currentTarget.style.background = "#d9be8f";
-                  else e.currentTarget.style.background = "rgba(200,169,110,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  if (plan.popular) e.currentTarget.style.background = "#c8a96e";
-                  else e.currentTarget.style.background = "transparent";
-                }}
-              >
-                Get Started
-              </a>
-            </motion.div>
+            <PricingCard key={plan.name} {...plan} index={i} tagline="" />
           ))}
+        </div>
+
+        {/* Mobile horizontal scroll */}
+        <div className="md:hidden pricing-scroll-wrap">
+          <div className="flex gap-4" style={{ paddingRight: "1.25rem" }}>
+            {supportPlans.map((plan, i) => (
+              <PricingCard key={plan.name} {...plan} index={i} tagline="" />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

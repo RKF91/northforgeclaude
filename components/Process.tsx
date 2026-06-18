@@ -1,17 +1,24 @@
-﻿"use client";
+"use client";
 
-import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const steps = [
   {
     num: "01",
     title: "Discovery Call",
-    body: "We start with a 20-minute call to learn about your business, your goals, and what you need from your website. No pressure, no pitch. Just a real conversation.",
+    body: "A 20-minute call to learn about your business, goals, and what you need from your website. No pressure, no pitch. Just a real conversation.",
   },
   {
     num: "02",
     title: "Design Proposal",
-    body: "Within a few days, we send you a custom proposal with design direction, page structure, and timeline. You approve it before we touch a pixel.",
+    body: "Within a few days, we send a custom proposal with design direction, page structure, and timeline. You approve before we touch a pixel.",
   },
   {
     num: "03",
@@ -30,46 +37,86 @@ const steps = [
   },
 ];
 
-function reveal(i: number) {
-  return {
-    initial: { opacity: 0, y: 28 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.2 },
-    transition: { duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  };
-}
-
 export function Process() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  // Animate each step line/content on scroll
+  useEffect(() => {
+    if (reduce || !sectionRef.current) return;
+    const ctx = gsap.context(() => {
+      const stepEls = gsap.utils.toArray<HTMLElement>(".process-step");
+      stepEls.forEach((step, i) => {
+        gsap.fromTo(
+          step,
+          { opacity: 0, x: 30 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.75,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: step,
+              start: "top 85%",
+              once: true,
+            },
+          }
+        );
+        // Animate the step number
+        const numEl = step.querySelector(".step-num");
+        if (numEl) {
+          gsap.fromTo(
+            numEl,
+            { opacity: 0 },
+            {
+              opacity: 1,
+              duration: 0.5,
+              delay: i * 0.08,
+              scrollTrigger: {
+                trigger: step,
+                start: "top 85%",
+                once: true,
+              },
+            }
+          );
+        }
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [reduce]);
+
   return (
     <section
+      ref={sectionRef}
       id="process"
       style={{
         background: "#0a0a0a",
-        padding: "7rem 0",
+        paddingTop: "5rem",
+        paddingBottom: "5rem",
         borderTop: "1px solid rgba(200,169,110,0.08)",
       }}
     >
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: "4rem",
-            alignItems: "start",
-          }}
-          className="process-layout"
-        >
-          {/* Left: heading */}
-          <motion.div {...reveal(0)} style={{ position: "sticky", top: "6rem" }}>
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 lg:gap-20 items-start">
+          {/* Left: sticky heading (desktop only) */}
+          <motion.div
+            ref={leftRef}
+            initial={reduce ? false : { opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8, ease }}
+            className="lg:sticky lg:top-24"
+          >
             <h2
               style={{
                 fontFamily: "var(--font-cormorant), serif",
-                fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)",
                 fontWeight: 400,
                 color: "#f2ede4",
                 lineHeight: 1.1,
                 letterSpacing: "-0.01em",
               }}
+              className="text-[2.2rem] sm:text-[3rem] md:text-[3.5rem]"
             >
               How we{" "}
               <em
@@ -85,45 +132,62 @@ export function Process() {
               </em>
             </h2>
             <p
-              style={{
-                marginTop: "1rem",
-                fontSize: "0.9rem",
-                color: "rgba(242,237,228,0.5)",
-                lineHeight: 1.7,
-                maxWidth: "280px",
-              }}
+              className="mt-4 text-sm max-w-[260px]"
+              style={{ color: "rgba(242,237,228,0.46)", lineHeight: 1.7 }}
             >
-              A clear, simple process so you always know where your project
-              stands.
+              A clear, transparent process so you always know where your
+              project stands.
             </p>
+
+            {/* Decorative image */}
+            <div
+              className="hidden lg:block mt-10 relative overflow-hidden"
+              style={{ aspectRatio: "4/3" }}
+            >
+              <img
+                src="https://picsum.photos/seed/northforge-process-workspace/600/450"
+                alt="NorthForge design process"
+                className="w-full h-full object-cover"
+                style={{ filter: "brightness(0.55) saturate(0.65)" }}
+                loading="lazy"
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "60%",
+                  background: "linear-gradient(to top, #0a0a0a, transparent)",
+                }}
+              />
+            </div>
           </motion.div>
 
           {/* Right: steps */}
           <div>
             {steps.map((step, i) => (
-              <motion.div
+              <div
                 key={step.num}
-                {...reveal(i + 1)}
+                className="process-step grid gap-4 sm:gap-6 py-7 sm:py-8"
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "4rem 1fr",
-                  gap: "1.5rem",
-                  alignItems: "start",
-                  padding: "2rem 0",
+                  gridTemplateColumns: "3.5rem 1fr",
                   borderBottom:
                     i < steps.length - 1
                       ? "1px solid rgba(200,169,110,0.1)"
                       : "none",
+                  opacity: 0, // GSAP animates in
                 }}
               >
                 <span
+                  className="step-num"
                   style={{
                     fontFamily: "var(--font-cormorant), serif",
-                    fontSize: "1.5rem",
+                    fontSize: "1.4rem",
                     fontWeight: 300,
-                    color: "rgba(200,169,110,0.4)",
+                    color: "rgba(200,169,110,0.35)",
                     lineHeight: 1,
-                    paddingTop: "0.1rem",
+                    paddingTop: "0.15rem",
                   }}
                 >
                   {step.num}
@@ -132,32 +196,56 @@ export function Process() {
                   <h3
                     style={{
                       fontFamily: "var(--font-cormorant), serif",
-                      fontSize: "1.65rem",
+                      fontSize: "1.6rem",
                       fontWeight: 500,
                       color: "#f2ede4",
-                      marginBottom: "0.6rem",
+                      marginBottom: "0.55rem",
                       lineHeight: 1.2,
                     }}
                   >
                     {step.title}
                   </h3>
                   <p
-                    style={{
-                      fontSize: "0.9rem",
-                      color: "rgba(242,237,228,0.55)",
-                      lineHeight: 1.75,
-                      maxWidth: "520px",
-                    }}
+                    className="text-sm max-w-[500px]"
+                    style={{ color: "rgba(242,237,228,0.52)", lineHeight: 1.75 }}
                   >
                     {step.body}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
+
+            {/* CTA after steps */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3, ease }}
+              className="pt-8"
+            >
+              <a
+                href="#contact"
+                className="btn-push inline-flex items-center gap-2"
+                style={{
+                  padding: "0.85rem 2rem",
+                  background: "#c8a96e",
+                  color: "#080808",
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#d9be8f")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#c8a96e")}
+              >
+                Start with a free call
+              </a>
+            </motion.div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-

@@ -16,28 +16,21 @@ export function Footer() {
       style={{
         background: "#080808",
         borderTop: "1px solid rgba(200,169,110,0.12)",
-        padding: "4rem 0 2rem",
+        paddingTop: "3.5rem",
+        paddingBottom: "2rem",
       }}
     >
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
-        {/* Top row */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "3rem",
-            paddingBottom: "3rem",
-            borderBottom: "1px solid rgba(200,169,110,0.1)",
-            alignItems: "start",
-          }}
-          className="footer-grid"
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
+        {/* Top grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pb-10"
+          style={{ borderBottom: "1px solid rgba(200,169,110,0.1)" }}
         >
           {/* Brand */}
           <div>
             <span
               style={{
                 fontFamily: "var(--font-cormorant), serif",
-                fontSize: "1.35rem",
+                fontSize: "1.3rem",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 color: "#f2ede4",
@@ -48,23 +41,19 @@ export function Footer() {
               NORTHFORGE
             </span>
             <p
-              style={{
-                fontSize: "0.85rem",
-                color: "rgba(242,237,228,0.45)",
-                lineHeight: 1.75,
-                maxWidth: "240px",
-              }}
+              className="text-sm max-w-[220px]"
+              style={{ color: "rgba(242,237,228,0.4)", lineHeight: 1.75 }}
             >
               Premium web design for restaurants, hospitality brands, and local
               businesses in Ontario and beyond.
             </p>
           </div>
 
-          {/* Navigation */}
+          {/* Nav */}
           <div>
             <p
               style={{
-                fontSize: "0.65rem",
+                fontSize: "0.62rem",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 color: "#c8a96e",
@@ -74,19 +63,21 @@ export function Footer() {
             >
               Navigation
             </p>
-            <nav style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <nav className="flex flex-col gap-3">
               {navLinks.map((l) => (
                 <a
                   key={l.href}
                   href={l.href}
+                  className="text-sm"
                   style={{
-                    fontSize: "0.875rem",
-                    color: "rgba(242,237,228,0.5)",
+                    color: "rgba(242,237,228,0.44)",
                     textDecoration: "none",
                     transition: "color 0.2s",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = "#f2ede4")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(242,237,228,0.5)")}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "rgba(242,237,228,0.44)")
+                  }
                 >
                   {l.label}
                 </a>
@@ -98,7 +89,7 @@ export function Footer() {
           <div>
             <p
               style={{
-                fontSize: "0.65rem",
+                fontSize: "0.62rem",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 color: "#c8a96e",
@@ -108,89 +99,58 @@ export function Footer() {
             >
               Get in touch
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-              <a
-                href="mailto:northforge.design@gmail.com"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.65rem",
-                  fontSize: "0.875rem",
-                  color: "rgba(242,237,228,0.5)",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#f2ede4")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(242,237,228,0.5)")}
-              >
-                <Envelope size={14} style={{ color: "#c8a96e", flexShrink: 0 }} />
-                northforge.design@gmail.com
-              </a>
-              <a
-                href="tel:5199810659"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.65rem",
-                  fontSize: "0.875rem",
-                  color: "rgba(242,237,228,0.5)",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#f2ede4")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(242,237,228,0.5)")}
-              >
-                <Phone size={14} style={{ color: "#c8a96e", flexShrink: 0 }} />
-                519-981-0659
-              </a>
-              <a
-                href="https://www.instagram.com/northforge.web"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.65rem",
-                  fontSize: "0.875rem",
-                  color: "rgba(242,237,228,0.5)",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#f2ede4")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(242,237,228,0.5)")}
-              >
-                <InstagramLogo size={14} style={{ color: "#c8a96e", flexShrink: 0 }} />
-                @northforge.web
-              </a>
+            <div className="flex flex-col gap-4">
+              {[
+                {
+                  Icon: Envelope,
+                  label: "northforge.design@gmail.com",
+                  href: "mailto:northforge.design@gmail.com",
+                },
+                {
+                  Icon: Phone,
+                  label: "519-981-0659",
+                  href: "tel:5199810659",
+                },
+                {
+                  Icon: InstagramLogo,
+                  label: "@northforge.web",
+                  href: "https://www.instagram.com/northforge.web",
+                  external: true,
+                },
+              ].map(({ Icon, label, href, external }) => (
+                <a
+                  key={label}
+                  href={href}
+                  {...(external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="flex items-center gap-2 text-sm"
+                  style={{
+                    color: "rgba(242,237,228,0.44)",
+                    textDecoration: "none",
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#f2ede4")}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "rgba(242,237,228,0.44)")
+                  }
+                >
+                  <Icon size={13} style={{ color: "#c8a96e", flexShrink: 0 }} />
+                  {label}
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Bottom row */}
+        {/* Bottom */}
         <div
-          style={{
-            paddingTop: "1.75rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6"
         >
-          <p
-            style={{
-              fontSize: "0.78rem",
-              color: "rgba(242,237,228,0.3)",
-            }}
-          >
+          <p style={{ fontSize: "0.75rem", color: "rgba(242,237,228,0.28)" }}>
             &copy; {new Date().getFullYear()} NorthForge. All rights reserved.
           </p>
-          <p
-            style={{
-              fontSize: "0.78rem",
-              color: "rgba(242,237,228,0.3)",
-            }}
-          >
+          <p style={{ fontSize: "0.75rem", color: "rgba(242,237,228,0.28)" }}>
             Ontario, Canada
           </p>
         </div>
